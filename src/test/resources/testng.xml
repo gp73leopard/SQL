@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="SQL">
+    <test name="test SQL" verbose="1">
+        <classes>
+            <class name="task_3.TestDDL" />
+            <class name="task_4.TestSimpleSelect" />
+            <class name="task_5.TestAggregateFunctions" />
+            <class name="task_6.TestJoinTable" />
+            <class name="task_7.TestRelationalAlgebra" />
+            <class name="task_8.TestDML" />
+            <class name="task_9.TestAdditionalFunctions" />
+        </classes>
+    </test>
+</suite>

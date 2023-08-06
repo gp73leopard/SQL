@@ -1,0 +1,10 @@
+{
+  "code" : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 0],
+  "model" : [100, 103, 100, 102, 103, 100, 102, 103, 102, 100, 101, 104, 101, 108, 0, 0],
+  "price" : [60000, 55000, 60000, 85000, 55000, 60000, 85000, 55000, 85000, 60000, 60000, 55000, 60000, 100000, 0, 0],
+  "maker" : ["lenovo", "dell", "lenovo", "asus", "dell", "lenovo", "asus", "dell", "asus", "lenovo", "hp", "acer", "hp", "apple", null, null],
+  "codeJoinTable" : [0, 1, 0, 3, 1, 0, 3, 1, 3, 0, 0, 0, 0, 0, 2, 4],
+  "modelJoinTable" : [0, 103, 0, 102, 103, 0, 102, 103, 102, 0, 0, 0, 0, 0, 106, 105],
+  "priceJoinTable" : [0, 55000, 0, 85000, 55000, 0, 85000, 55000, 85000, 0, 0, 0, 0, 0, 70000, 80000],
+  "makerJoinTable" : [null, "dell", null, "asus", "dell", null, "asus", "dell", "asus", null, null, null, null, null, "lg", "samsung"]
+}

@@ -252,16 +252,16 @@ VALUES
 ## 4) Умение составлять простые запросы на выборку данных (SELECT)
 ### Найти все модели, кроме 102, 103, 104 из таблицы ProductOne. Ответ отсортируйте по убыванию номера модели
 ``` sql
-SELECT * FROM ProductOne WHERE model NOT IN ('102', '103', '104')
+SELECT model, price, maker FROM ProductOne WHERE model NOT IN ('102', '103', '104')
 ORDER BY model DESC;
 ```
 ### Отобразить строки из таблицы ProductOne у которых цена (price) больше 55000, а производитель (maker) с названием, начинающимся на 'a' и на 'l'.
 ``` sql
-SELECT * FROM ProductOne WHERE price > 55000 AND (maker LIKE 'a%' OR maker LIKE 'l%')
+SELECT model, price, maker FROM ProductOne WHERE price > 55000 AND (maker LIKE 'a%' OR maker LIKE 'l%')
 ```
 ### Отобразить строки из таблицы ProductOne, которые находятся в диапазоне цены (price) от  55000 до 60000.
 ``` sql
-SELECT * FROM ProductOne WHERE price BETWEEN 55000 AND 60000
+SELECT model, price,maker FROM ProductOne WHERE price BETWEEN 55000 AND 60000
 ```
 ## Знание агрегатных функций
 ### Найти количество продуктов из таблицы ProductOne, выпущенных производителем Lenovo и отобразить их в столбце qty
@@ -308,10 +308,10 @@ SELECT * FROM ProductOne p1 FULL JOIN ProductTwo p2 ON p1.model=p2.model
 ### Для следующих задач не используем явные операции соединения
 ### Отобразить продукты производителей 'asus' из таблицы ProductOne  и 'samsung' из таблицы ProductTwo
 ``` sql
-SELECT * FROM ProductOne
+SELECT model, price, maker FROM ProductOne
 WHERE maker='asus'
 UNION
-SELECT * FROM ProductTwo
+SELECT model, price, maker FROM ProductTwo
 WHERE maker='samsung'
 ```
 ### Отобразить продукты из таблиц ProductOne и ProductTwo, номера моделей которых сопадают
@@ -349,23 +349,23 @@ UPDATE ProductOne SET model=model+10 WHERE maker='apple'
 ## 9) Дополнительные задачи
 ### Отобразить первые 3 записи таблицы ProductOne
 ``` sql
-SELECT * FROM productone
+SELECT model, price, maker FROM productone
 LIMIT 3;
 ```
 ### Найти продукты из таблицы ProductOne, стоимость которых превышает стоимость любого продукта из таблицы ProductTwo
 ``` sql
-SELECT * FROM productone WHERE price > ALL (SELECT price FROM producttwo);
+SELECT model, price, maker FROM productone WHERE price > ALL (SELECT price FROM producttwo);
 ```
 ### Найти продукты из таблицы ProductOne, стоимость которых превышает стоимость хотя бы одного продукта из таблицы ProductTwo
 ``` sql
-SELECT * FROM productone WHERE price > ANY (SELECT price FROM producttwo);
+SELECT model, price, maker FROM productone WHERE price > ANY (SELECT price FROM producttwo);
 ```
 ### Вывести продукты из таблицы ProductOne и добавить текст (в новый столбец 'pricetext') в зависимости от цены:
 > - Больше 70000 – дорого;
 > - Равно 70000 – приемлемо;
 > - Больше 70000 – дешево
 ``` sql
-SELECT *,
+SELECT model, price, maker,
 CASE
 WHEN price > 70000 THEN 'expensive'
 WHEN price = 70000 THEN 'reasonably'
@@ -386,3 +386,60 @@ $$;
 ``` sql
 CALL insert_procedure (111, 120000, 'razer');
 ```
+
+## Фрейм автотестирования SQL
+### После прохождения подготовительного шага необходимо создать подключение с базой данных
+### В данном проекте подключение реализовано в классе ConnectionDB
+``` java
+public class ConnectionDB {
+    private static final String DB_URL = Config.getDbConfigurations().dbUrl();
+    private static final String DB_USER = Config.getDbConfigurations().dbUser();
+    private static final String DB_PASS = Config.getDbConfigurations().dbPass();
+
+    private static final Logger logger = Logger.getLogger(ConnectionDB.class.getName());
+
+    public static java.sql.Connection connection() {
+
+        logger.info("Testing connection to PostgreSQL JDBC");
+        java.sql.Connection connection = null;
+
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            logger.info("PostgreSQL JDBC Driver is not found. Include it in your library path ");
+            e.printStackTrace();
+        }
+
+        logger.info("PostgreSQL JDBC Driver successfully connected");
+
+
+        try {
+            connection = DriverManager
+                    .getConnection(DB_URL, DB_USER, DB_PASS);
+
+        } catch (SQLException e) {
+            logger.info("Connection Failed");
+            e.printStackTrace();
+        }
+
+        if (connection != null) {
+            logger.info("You successfully connected to database now");
+        } else {
+            logger.info("Failed to make connection to database");
+        }
+
+        return connection;
+    }
+
+}
+```
+### Адрес подключения, логин и пароль хранятся в папке с ресурсами
+``` java
+db.url=jdbc:postgresql://localhost:5432/dataBase
+db.user=username
+db.pass=password
+```
+### Для проверки ожидаемых результатов использовались json файлы
+### В папке pojo находится класс Product для работы с json файлами
+### В проекте реализованы классы для работы с DDL и DML, которые расположены в папке sql
+### Запуск тестов рекомендуется начинать с task_3 и дальше. В task_3 происходит предварительное удаление таблиц для повторного тестирования из-за вносимых изменений в таблицы
